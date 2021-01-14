@@ -12,7 +12,6 @@
       <table class="Table">
         <thead>
           <tr>
-          
             <td>ID</td>
             <td>EMAIL</td>
             <td>FIRST NAME</td>
@@ -38,14 +37,21 @@
         <button class="Button ml-2" >
           <span>Next</span>
         </button>
+        <Modal>
+          <a>HELLO</a>
+        </Modal>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Modal from '../components/Modal'
 export default {
-  name: 'Home'
+  name: 'Home',
+  components:{
+    Modal
+  }
 }
 </script>
 <style lang="scss" scoped>
