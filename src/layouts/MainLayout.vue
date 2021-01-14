@@ -11,3 +11,9 @@ export default {
   components: { Navbar }
 }
 </script>
+<style>
+body{
+    background-color: darkseagreen;
+    margin: 3rem;
+}
+</style>
