@@ -1,13 +1,9 @@
 <template>
-<div>
-    <div class="container">
-    <div class="interior">
-        <a href="#open-modal">OPEN POPUP</a>
+<div v-show="modalActive">
+    <div class="container" >
     </div>
-    </div>
-    <div id="open-modal" class="modal-window">
+    <div id="open-add-modal" class="modal-window">
         <div>
-            <a href="#" title="Close" class="modal-close">Close</a>
             <slot></slot>
         </div>
     </div>
@@ -16,7 +12,12 @@
 
 <script>
 export default {
-
+  props:{
+    modalActive:{
+      type:Boolean,
+      default:false
+    }
+  }
 }
 </script>
 
@@ -29,15 +30,9 @@ export default {
   bottom: 0;
   left: 0;
   z-index: 999;
-  visibility: hidden;
-  opacity: 0;
-  pointer-events: none;
+  visibility: visible;
+  opacity: 1;
   transition: all 0.3s;
-  &:target {
-    visibility: visible;
-    opacity: 1;
-    pointer-events: auto;
-  }
   &>div {
     width: 400px;
     position: absolute;
@@ -71,6 +66,7 @@ export default {
   top: 0;
   width: 70px;
   text-decoration: none;
+  cursor: pointer;
   &:hover {
     color: black;
   }
