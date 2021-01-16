@@ -8,7 +8,7 @@
 			</svg>
 			Add New
 		</button>
-        
+		<input class="Search" type="text" placeholder="Search..." v-model="searchBar" v-on:keyup="search()">
       </div>
         <EditModal v-bind:modalActive="editModalOpen">
 			<a @click="editModalOpen=false" title="Close" class="modal-close">Close</a>
@@ -36,12 +36,12 @@
 			<h1>ADD NEW USER</h1>
 			<div class="Input">
 				<div class="Input-container">
-					<input type="text" v-model="addName" required=""/>
+					<input type="text" v-model="addFirstName" required=""/>
 					<label>Name</label>		
 				</div>
 				
 				<div class="Input-container">
-					<input type="text"  v-model="editName" required=""/>
+					<input type="text"  v-model="addLastName" required=""/>
 					<label>Name</label>		
 				</div>
 				<div class="Input-container">		
@@ -129,12 +129,13 @@ export default {
 		  editFirstName:"",
 		  editLastName:"",
 		  editJob:"",
+		  searchBar:""
 	  }
   },
 
   methods:{
-	  getUsers(page=this.pageNumber){
-		this.$client
+	  async getUsers(page=this.pageNumber){
+		return this.$client
 		.get('https://reqres.in/api/users',{params:{page:page}})
 		.then((response) => {
 			this.users = response.data.data
@@ -157,6 +158,19 @@ export default {
 		  let user = this.users.find(u => u.id==id)
 		  this.editFirstName = user.first_name
 		  this.editLastName = user.last_name
+	  },
+	  async search(){
+		let list = [];
+		await this.getUsers().then((response) => {
+		for (let i = 0; i < this.users.length; i++) {
+		if(	this.users[i].first_name.indexOf(this.searchBar)!=-1 || 
+			this.users[i].last_name.indexOf(this.searchBar)!=-1 ||
+			this.users[i].email.indexOf(this.searchBar)!=-1 ){
+				list.push(this.users[i])
+			}
+		}})
+		this.users = list;
+		  //this.users.map(u => {if(u.includes(this.searchBar)) list.push(u);} );
 	  }
   },
   
@@ -378,5 +392,30 @@ strong, b {
 .danger{
 		background-color: rgb(189, 0, 0);
 		color: #ffffff;
+}
+.Search{
+	@include actions();
+	outline: none !important;
+	font-weight: 500;
+	background-color: #fff;
+	border: 0;
+	height: 28px;
+	display: flex;
+	align-items: center;
+	padding: 0px 16px;
+	border-radius: 4px;
+	transition:
+		background-color .24s,
+		box-shadow .24s,
+		color .24s;
+	color: #3c4257;
+	margin-right: .5rem;
+	span {
+		line-height: 20px;
+	}
+	svg {
+		margin-right: 8px;
+		fill: #4f566b;
+	}
 }
 </style>
