@@ -15,20 +15,24 @@
           	<h1>EDIT USER</h1>
 			<div class="Input">
 				<div class="Input-container">
-					<input type="text"  v-model="editFirstName" required=""/>
+					<input type="text"  v-model="editEmail"/>
+					<label>Email</label>		
+				</div>
+				<div class="Input-container">
+					<input type="text"  v-model="editFirstName"/>
 					<label>First Name</label>		
 				</div>
 				
 				<div class="Input-container">
-					<input type="text"  v-model="editLastName" required=""/>
+					<input type="text"  v-model="editLastName"/>
 					<label>Last Name</label>		
 				</div>
 
 				<div class="Input-container">		
-					<input type="Text" v-model="editJob" required=""/>
+					<input type="Text" v-model="editJob"/>
 					<label>Job</label>
 				</div>
-				<button class="Button">Confirm</button>
+				<button class="Button" @click="editConfirm()">Confirm</button>
 			</div>
         </EditModal>
 		<AddModal v-bind:modalActive="addModalOpen">
@@ -36,19 +40,23 @@
 			<h1>ADD NEW USER</h1>
 			<div class="Input">
 				<div class="Input-container">
+					<input type="text"  v-model="addEmail"/>
+					<label>Email</label>		
+				</div>
+				<div class="Input-container">
 					<input type="text" v-model="addFirstName" required=""/>
-					<label>Name</label>		
+					<label>First Name</label>		
 				</div>
 				
 				<div class="Input-container">
 					<input type="text"  v-model="addLastName" required=""/>
-					<label>Name</label>		
+					<label>Last Name</label>		
 				</div>
 				<div class="Input-container">		
 					<input type="Text" v-model="addJob" required=""/>
 					<label>Job</label>
 				</div>
-				<button class="Button">Confirm</button>
+				<button class="Button" @click="addConfirm()">Confirm</button>
 			</div>
         </AddModal>
 		<DeleteModal v-bind:modalActive="deleteModalOpen">
@@ -123,12 +131,15 @@ export default {
 		  deleteModalOpen:false,
 		  addModalOpen:false,
 		  editModalOpen:false,
+		  addEmail:"",
 		  addFirstName:"",
 		  addLastName:"",
 		  addJob:"",
+		  editEmail:"",
 		  editFirstName:"",
 		  editLastName:"",
 		  editJob:"",
+		  editId:"",
 		  searchBar:""
 	  }
   },
@@ -153,11 +164,82 @@ export default {
 			  this.getUsers(this.pageNumber-1);
 	  },
 
+	  addConfirm(){
+		let data={
+			name:this.addFirstName + " " + this.addLastName,
+			job:this.addJob
+		}
+		this.$client
+		.post('https://reqres.in/api/users/',data=data)
+		.then((response) => {
+			let user = {}
+			user.first_name = this.addFirstName
+			user.last_name = this.addLastName
+			user.email = this.addEmail
+			this.users.push(user)//add local users table
+			this.addModalOpen=false;
+			this.$notify({
+				group: 'foo',
+				title: 'Success!',
+				text: 'User is successfully added!',
+				type:'success'
+				});
+			this.$notify({
+				group: 'foo',
+				title: 'Response:'+response.status,
+				text: response.data
+				});
+		})
+		.catch(error => 
+			this.$notify({
+				group: 'foo',
+				title: 'Response:'+error.status,
+				text: error.data,
+				type:'warn'
+				}))
+	  },
+
+	  editConfirm(){
+		let data={
+			name:this.editFirstName + " " + this.editLastName,
+			job:this.editJob
+		}
+		this.$client
+		.put(`https://reqres.in/api/users/${this.editId}`,data=data)
+		.then((response) => {
+			let user = this.users.find(u => u.id==this.editId)
+			user.first_name = this.editFirstName//edit local users table
+			user.last_name = this.editLastName
+			user.email = this.editEmail
+			this.editModalOpen=false;
+			this.$notify({
+				group: 'foo',
+				title: 'Success!',
+				text: 'User is successfully edited!!',
+				type:'success'
+				});
+			this.$notify({
+				group: 'foo',
+				title: 'Response:'+response.status,
+				text: response.data
+				});
+		})
+		.catch(error => 
+			this.$notify({
+				group: 'foo',
+				title: 'Response:'+error.status,
+				text: error.data,
+				type:'warn'
+				}))
+	  },
+
 	  editUser(id){
 		  this.editModalOpen=true;
 		  let user = this.users.find(u => u.id==id)
+		  this.editEmail = user.email
 		  this.editFirstName = user.first_name
 		  this.editLastName = user.last_name
+		  this.editId = user.id
 	  },
 	  async search(){
 		let list = [];
@@ -176,6 +258,11 @@ export default {
   
   created(){
 	  this.getUsers();
+	//   this.$notify({
+	// 	group: 'foo',
+	// 	title: 'Important message',
+	// 	text: 'Hello user! This is a notification!'
+	// 	});
   }
 }
 </script>

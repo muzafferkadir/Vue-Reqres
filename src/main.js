@@ -4,9 +4,11 @@ import router from './router'
 import store from './store'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
-
+import Notifications from 'vue-notification'
+ 
 Vue.config.productionTip = false
 Vue.use(VueAxios, axios)
+Vue.use(Notifications)
 Vue.prototype.$client = axios
 
 new Vue({
