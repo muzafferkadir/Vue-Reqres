@@ -8,7 +8,7 @@
 			</svg>
 			Add New
 		</button>
-		<input class="Search" type="text" placeholder="Search..." v-model="searchBar" v-on:keyup="search()">
+		<input class="Search" type="text" placeholder="Search..." v-model="searchBar" v-on:keyup="searchTimer()">
       </div>
         <EditModal v-bind:modalActive="editModalOpen">
 			<a @click="editModalOpen=false" title="Close" class="modal-close">Close</a>
@@ -63,7 +63,7 @@
 			<a @click="deleteModalOpen=false" title="Close" class="modal-close">Close</a>
 			<h1>Are you sure you want to delete the user?</h1>
 			<div class="Input">
-				<button class="Button danger">Confirm</button>
+				<button class="Button danger" @click="deleteConfirm()">Confirm</button>
 			</div>
 		</DeleteModal>
       <table class="Table">
@@ -84,7 +84,7 @@
 				<td>{{user.last_name}}</td>
 				<td class="Actions">		
 					<button class="Button" @click="editUser(user.id)">Edit</button>
-					<button class="Button" @click="deleteModalOpen=true">Delete</button>
+					<button class="Button" @click="deleteModalOpen=true; deleteUser = user.id;">Delete</button>
 				</td>
 			</tr>
 			<tr>
@@ -129,6 +129,7 @@ export default {
 		  totalPage:1,
 		  totalUser:0,
 		  deleteModalOpen:false,
+		  deleteUser:0,
 		  addModalOpen:false,
 		  editModalOpen:false,
 		  addEmail:"",
@@ -140,7 +141,8 @@ export default {
 		  editLastName:"",
 		  editJob:"",
 		  editId:"",
-		  searchBar:""
+		  searchBar:"",
+		  timer:0,
 	  }
   },
 
@@ -163,7 +165,33 @@ export default {
 		  	if(context=="previous" && this.pageNumber!=1 )
 			  this.getUsers(this.pageNumber-1);
 	  },
-
+	  deleteConfirm(){
+		this.$client
+		.delete(`https://reqres.in/api/users/${this.deleteUser}`)
+		.then((response) => {
+			let user = this.users.map((item) => item.id).indexOf(this.deleteUser);
+			this.users.splice(user, 1);
+			this.deleteModalOpen=false;
+			this.$notify({
+				group: 'foo',
+				title: 'Success!',
+				text: 'User is deleted!',
+				type:'warn'
+				});
+			this.$notify({
+				group: 'foo',
+				title: 'Response:'+response.status,
+				text: response.data
+				});
+		})
+		.catch(error => 
+			this.$notify({
+				group: 'foo',
+				title: 'Response:'+error.status,
+				text: error.data,
+				type:'warn'
+				}))
+	  },
 	  addConfirm(){
 		let data={
 			name:this.addFirstName + " " + this.addLastName,
@@ -240,6 +268,15 @@ export default {
 		  this.editFirstName = user.first_name
 		  this.editLastName = user.last_name
 		  this.editId = user.id
+	  },
+	  searchTimer(){			
+		if (this.timer) {
+			clearTimeout(this.timer);
+			this.timer = null;
+		}
+		this.timer = setTimeout(() => {
+			this.search();
+		}, 800);
 	  },
 	  async search(){
 		let list = [];
