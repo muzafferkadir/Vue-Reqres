@@ -6,6 +6,9 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import Notifications from 'vue-notification'
  
+
+axios.defaults.baseURL = 'https://reqres.in/api/'
+
 Vue.config.productionTip = false
 Vue.use(VueAxios, axios)
 Vue.use(Notifications)

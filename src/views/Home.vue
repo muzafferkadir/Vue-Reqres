@@ -148,7 +148,7 @@ export default {
   methods:{
 	  async getUsers(page=this.pageNumber){
 		return this.$client
-		.get('https://reqres.in/api/users',{params:{page:page}})
+		.get('users',{params:{page:page}})
 		.then((response) => {
 			this.users = response.data.data
 			this.pageNumber = response.data.page
@@ -166,7 +166,7 @@ export default {
 	  },
 	  deleteConfirm(){
 		this.$client
-		.delete(`https://reqres.in/api/users/${this.deleteUser}`)
+		.delete(`users/${this.deleteUser}`)
 		.then((response) => {
 			let user = this.users.map((item) => item.id).indexOf(this.deleteUser);
 			this.users.splice(user, 1);
@@ -198,7 +198,7 @@ export default {
 			job:this.addJob
 		}
 		this.$client
-		.post('https://reqres.in/api/users/',data=data)
+		.post('users/',data=data)
 		.then((response) => {
 			let user = {}
 			user.first_name = this.addFirstName
@@ -234,7 +234,7 @@ export default {
 			job:this.editJob
 		}
 		this.$client
-		.put(`https://reqres.in/api/users/${this.editId}`,data=data)
+		.put(`users/${this.editId}`,data=data)
 		.then((response) => {
 			let user = this.users.find(u => u.id==this.editId)
 			user.first_name = this.editFirstName//edit local users table
