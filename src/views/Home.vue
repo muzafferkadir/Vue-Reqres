@@ -96,7 +96,7 @@
         </tbody>
       </table>
       <div class="Card__content">
-        <div class="Card__content-text"><strong> Total:{{totalUser}}</strong> result(s)</div>
+        <div class="Card__content-text"><strong> Total:{{$store.state.totalUser}}</strong> result(s)</div>
 		<div class="Footer">
 			<button @click="changePage('previous')" class="Button " >
 			<span>Previous</span>
@@ -127,7 +127,6 @@ export default {
 		  users:[],
 		  pageNumber:1,
 		  totalPage:1,
-		  totalUser:0,
 		  deleteModalOpen:false,
 		  deleteUser:0,
 		  addModalOpen:false,
@@ -154,7 +153,7 @@ export default {
 			this.users = response.data.data
 			this.pageNumber = response.data.page
 			this.totalPage = response.data.total_pages
-			this.totalUser = response.data.total
+			this.$store.commit('SET_TOTAL_USER',response.data.total)
 		})
 		.catch(error => console.log(error))
 	  },
@@ -183,6 +182,7 @@ export default {
 				title: 'Response:'+response.status,
 				text: response.data
 				});
+			this.$store.commit('DECREASE_TOTAL_USER')
 		})
 		.catch(error => 
 			this.$notify({
@@ -217,6 +217,7 @@ export default {
 				title: 'Response:'+response.status,
 				text: response.data
 				});
+				this.$store.commit('INCREASE_TOTAL_USER')
 		})
 		.catch(error => 
 			this.$notify({
